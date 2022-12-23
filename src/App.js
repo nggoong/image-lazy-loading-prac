@@ -7,27 +7,31 @@ import PhotoCard from './components/PhotoCard';
 function App() {
   
   const [datas, setDatas] = useState([]);
+  const [page, setPage] = useState(1);
+
+  const getPhotos = async (pageNum) => {
+    try {
+      const res = await fetchPhotoData.fetchPhotos(pageNum);
+      const data = res.data;
+      setDatas((prev) => [...prev, ...data])
+    }
+    catch(err) {
+      alert("fetch err!!");
+    }
+  }
 
   useEffect(() => {
-    const getPhotos = async () => {
-      try {
-        const res = await fetchPhotoData.fetchPhotos(1);
-        const data = res.data;
-        console.log(data);
-        setDatas(data);
-      }
-      catch(err) {
-        console.log(err);
-        alert("fetch err");
-      }
-    }
+    getPhotos(page);
 
-    getPhotos();
-  }, [])
+    return(() => {
+      setPage(1);
+    })
+  }, [page])
 
   return (
     <div className="App">
-      {datas?.map((item, index) => <PhotoCard item={item} key={index} />)}
+      {datas?.map((item, index) => 
+      <PhotoCard item={item} key={index} setPage={setPage} idx={index} length={datas.length}/>)}
     </div>
   );
 }
