@@ -7,7 +7,7 @@ const PhotoCard = ({ item, idx, setPage, length }) => {
 
   const onIntersect = ([entry], observer) => {
     if (entry.isIntersecting) {
-      setPage(page => page + 1);
+      setPage((page) => page + 1);
       observer.unobserve(entry.target);
     }
   };
@@ -19,14 +19,14 @@ const PhotoCard = ({ item, idx, setPage, length }) => {
       observer.observe(target);
     }
 
-    return(() => {
-        observer && observer.disconnect();
-    })
+    return () => {
+      observer && observer.disconnect();
+    };
   }, [target]);
 
   return (
     <PhotoCardWrapper ref={idx === length - 1 ? setTarget : null}>
-      <PhotoImage imageUrl={item.url} />
+      <PhotoImage imageUrl={item.url} thumbnailUrl={item.thumbnailUrl} />
     </PhotoCardWrapper>
   );
 };
