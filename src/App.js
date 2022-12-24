@@ -1,5 +1,3 @@
-import logo from './logo.svg';
-import './App.css';
 import React, { useEffect, useState } from 'react';
 import { fetchPhotoData } from './axios/apis';
 import PhotoCard from './components/PhotoCard';
@@ -22,10 +20,6 @@ function App() {
 
   useEffect(() => {
     getPhotos(page);
-
-    return(() => {
-      setPage(1);
-    })
   }, [page])
 
   return (
