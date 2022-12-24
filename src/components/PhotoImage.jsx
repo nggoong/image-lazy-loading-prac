@@ -7,13 +7,14 @@ const PhotoImage = ({ imageUrl, thumbnailUrl }) => {
 
   const onIntersect = ([entry], observer) => {
     if(entry.isIntersecting) {
-      console.log("heelow");
+      const current = imageRef.current;
+      current.src = current.dataset.src;
       observer.unobserve(entry.target);
     }
   }
 
   useEffect(() => {
-    const observer = new IntersectionObserver(onIntersect, {threshold:0.1});
+    const observer = new IntersectionObserver(onIntersect, {threshold:1.0});
     observer.observe(imageRef.current);
 
     return() => {
@@ -24,7 +25,7 @@ const PhotoImage = ({ imageUrl, thumbnailUrl }) => {
     return(
         <PhotoImageWrapper>
             <picture>
-                <img src={imageUrl} alt="Temp Image" ref={imageRef} data-src={thumbnailUrl}/>
+                <img src={thumbnailUrl} alt="Temp Image" ref={imageRef} data-src={imageUrl}/>
             </picture>
         </PhotoImageWrapper>
     )

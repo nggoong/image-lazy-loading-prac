@@ -34,5 +34,5 @@ const PhotoCard = ({ item, idx, setPage, length }) => {
 export default PhotoCard;
 
 const PhotoCardWrapper = styled.div`
-  background: yellow;
+  background: black;
 `;
