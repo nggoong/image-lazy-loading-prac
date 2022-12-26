@@ -1,70 +1,87 @@
-# Getting Started with Create React App
+# image lazy loading 구현
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 방법 1: Intersection Observer API (branch: feature/IOA)
 
-## Available Scripts
+### 📌code
 
-In the project directory, you can run:
+``` jsx
+import React, { useEffect, useRef } from 'react';
+import styled from 'styled-components';
 
-### `npm start`
+const PhotoImage = ({ imageUrl, thumbnailUrl }) => {
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+  const imageRef = useRef(null);
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+  const onIntersect = ([entry], observer) => {
+    if(entry.isIntersecting) {
+      const current = imageRef.current;
+      current.src = current.dataset.src;
+      observer.unobserve(entry.target);
+    }
+  }
 
-### `npm test`
+  useEffect(() => {
+    const observer = new IntersectionObserver(onIntersect, {threshold:1.0});
+    observer.observe(imageRef.current);
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    return() => {
+      observer && observer.disconnect();
+    }
+  }, [])
 
-### `npm run build`
+    return(
+        <PhotoImageWrapper>
+            <picture>
+                <img src={thumbnailUrl} alt="Temp Image" ref={imageRef} data-src={imageUrl}/>
+            </picture>
+        </PhotoImageWrapper>
+    )
+}
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+export default PhotoImage;
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- image 각각에 Intersection Observer API 적용
+- image가 viewport에 노출이 되기 전에는 thumbnail image로 로드
+- image가 viewport에 노출이 되면 원래의 image로 로드
+- 원래의 이미지의 URL을 dataset에 저장한 후 viewport 노출 시 dataset에 저장된 URL 적용하는 방법
+- onIntersect 함수에 위의 로직을 구현
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 방법 2: react-lazy-load-image-component(branch: feature/RLLIC)
 
-### `npm run eject`
+> npm install react-lazy-laod-image-component
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+패키지 설치 후 사용
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 📌 code
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```jsx
+import React, { useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import { LazyLoadImage }from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+import 'react-lazy-load-image-component/src/effects/opacity.css';
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+const PhotoImage = ({ imageUrl }) => {
+    return(
+        <PhotoImageWrapper>
+            <LazyLoadImage
+            src={imageUrl}
+            effect="blur"
+            threshold={100}
+              />
+            
+        </PhotoImageWrapper>
+    )
+}
 
-## Learn More
+export default PhotoImage;
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+const PhotoImageWrapper = styled.div`
+  
+`
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- LazyLoadImage를 import 하여 image src 적용
+- props 중 effect를 설정하여 viewport에 노출이 될 때 이미지가 변경되는 효과 적용
+- effect에 사용되는 효과는 별도의 css를 import하여 사용
