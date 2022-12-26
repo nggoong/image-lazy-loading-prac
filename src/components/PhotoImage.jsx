@@ -1,32 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { LazyLoadImage }from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+import 'react-lazy-load-image-component/src/effects/opacity.css';
 
-const PhotoImage = ({ imageUrl, thumbnailUrl }) => {
-
-  const imageRef = useRef(null);
-
-  const onIntersect = ([entry], observer) => {
-    if(entry.isIntersecting) {
-      const current = imageRef.current;
-      current.src = current.dataset.src;
-      observer.unobserve(entry.target);
-    }
-  }
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(onIntersect, {threshold:1.0});
-    observer.observe(imageRef.current);
-
-    return() => {
-      observer && observer.disconnect();
-    }
-  }, [])
-
+const PhotoImage = ({ imageUrl }) => {
     return(
         <PhotoImageWrapper>
-            <picture>
-                <img src={thumbnailUrl} alt="Temp Image" ref={imageRef} data-src={imageUrl}/>
-            </picture>
+            <LazyLoadImage
+            src={imageUrl}
+            effect="blur"
+            threshold={100}
+              />
+            
         </PhotoImageWrapper>
     )
 }
