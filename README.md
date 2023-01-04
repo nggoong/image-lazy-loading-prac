@@ -49,7 +49,7 @@ export default PhotoImage;
 
 ## 방법 2: react-lazy-load-image-component(branch: feature/RLLIC)
 
-> npm install react-lazy-laod-image-component
+> npm install react-lazy-load-image-component
 
 패키지 설치 후 사용
 
